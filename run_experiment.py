@@ -1,5 +1,7 @@
 from qslab.sim import GBMParams, simulate_gbm
 from qslab.backtest import buy_and_hold
+from qslab.metrics import max_drawdown
+
 
 import numpy as np
 
@@ -19,12 +21,16 @@ def main() -> None:
     prices = simulate_gbm(params)  # shape: (n_paths, steps+1)
     pnls = np.empty(params.n_paths, dtype=float)
     total_returns = np.empty(params.n_paths, dtype=float)
+    mdds = np.empty(params.n_paths, dtype=float)
 
     for i in range(params.n_paths):
         path = prices[i]
         res = buy_and_hold(path)
+
         pnls[i] = res.pnl
         total_returns[i] = res.total_return
+        mdds[i] = max_drawdown(res.equity)
+
 
     print("=== Monte Carlo Summary (Buy & Hold on GBM) ===")
     print("Paths:", params.n_paths)
@@ -34,6 +40,9 @@ def main() -> None:
     print("Worst PnL:", round(float(pnls.min()), 2))
     print("% Profitable:", round(float((pnls > 0).mean() * 100), 2), "%")
     print("Mean total return:", round(float(total_returns.mean() * 100), 2), "%")
+    print("Mean max drawdown:", round(float(mdds.mean() * 100), 2), "%")
+    print("Worst max drawdown:", round(float(mdds.max() * 100), 2), "%")
+
 
 
 if __name__ == "__main__":
