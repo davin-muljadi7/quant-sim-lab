@@ -14,3 +14,16 @@ def max_drawdown(equity: np.ndarray) -> float:
     peaks = np.maximum.accumulate(equity)
     drawdowns = equity / peaks - 1.0   # ≤ 0
     return float(-drawdowns.min())
+
+def volatility(returns: np.ndarray) -> float:
+    """
+    Volatility of returns (standard deviation).
+    """
+    returns = np.asarray(returns, dtype=float)
+
+    if returns.ndim != 1:
+        raise ValueError("returns must be 1D")
+    if len(returns) < 2:
+        return 0.0
+
+    return float(returns.std(ddof=1))
