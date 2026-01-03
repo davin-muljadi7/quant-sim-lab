@@ -27,3 +27,22 @@ def volatility(returns: np.ndarray) -> float:
         return 0.0
 
     return float(returns.std(ddof=1))
+
+def sharpe_ratio(returns: np.ndarray) -> float:
+    """
+    Sharpe ratio using mean return divided by return volatility.
+    Risk-free rate assumed to be 0.
+    """
+    returns = np.asarray(returns, dtype=float)
+
+    if returns.ndim != 1:
+        raise ValueError("returns must be 1D")
+    if len(returns) < 2:
+        return 0.0
+
+    vol = returns.std(ddof=1)
+
+    if vol == 0.0:
+        return 0.0
+
+    return float(returns.mean() / vol)
