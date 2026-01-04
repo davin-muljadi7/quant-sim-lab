@@ -45,8 +45,6 @@ def main() -> None:
     pnls_bh = np.empty(params.n_paths)
     total_returns_bh = np.empty(params.n_paths)
     mdds_bh = np.empty(params.n_paths)
-    vols_bh = np.empty(params.n_paths)
-    sharpes_bh = np.empty(params.n_paths)
 
     # MA Crossover arrays
     pnls_ma = np.empty(params.n_paths)
@@ -54,45 +52,6 @@ def main() -> None:
     mdds_ma = np.empty(params.n_paths)
     vols_ma = np.empty(params.n_paths)
     sharpes_ma = np.empty(params.n_paths)
-
-
-    # Buy and Hold storage
-    bh_mean_pnl = float(pnls_bh.mean())
-    bh_mean_return = float(total_returns_bh.mean())
-    bh_mean_dd = float(mdds_bh.mean())
-    bh_worst_dd = float(mdds_bh.max())
-    bh_mean_vol = float(vols_bh.mean())
-    bh_mean_sharpe = float(sharpes_bh.mean())
-
-    insert_result(
-        strategy="buy_and_hold",
-        n_paths=params.n_paths,
-        mean_pnl=bh_mean_pnl,
-        mean_return=bh_mean_return,
-        mean_drawdown=bh_mean_dd,
-        worst_drawdown=bh_worst_dd,
-        mean_volatility=bh_mean_vol,
-        mean_sharpe=bh_mean_sharpe,
-    )
-
-    # MA Crossover storage
-    ma_mean_pnl = float(pnls_ma.mean())
-    ma_mean_return = float(total_returns_ma.mean())
-    ma_mean_dd = float(mdds_ma.mean())
-    ma_worst_dd = float(mdds_ma.max())
-    ma_mean_vol = float(vols_ma.mean())
-    ma_mean_sharpe = float(sharpes_ma.mean())
-
-    insert_result(
-        strategy="ma_crossover_20_50",
-        n_paths=params.n_paths,
-        mean_pnl=ma_mean_pnl,
-        mean_return=ma_mean_return,
-        mean_drawdown=ma_mean_dd,
-        worst_drawdown=ma_worst_dd,
-        mean_volatility=ma_mean_vol,
-        mean_sharpe=ma_mean_sharpe,
-    )
 
     for i in range(params.n_paths):
         path = prices[i]
@@ -108,6 +67,40 @@ def main() -> None:
         pnls_ma[i] = res_ma.pnl
         total_returns_ma[i] = res_ma.total_return
         mdds_ma[i] = max_drawdown(res_ma.equity)
+    
+        # Buy and Hold storage
+    bh_mean_pnl = float(pnls_bh.mean())
+    bh_mean_return = float(total_returns_bh.mean())
+    bh_mean_dd = float(mdds_bh.mean())
+    bh_worst_dd = float(mdds_bh.max())
+
+    insert_result(
+        strategy="buy_and_hold",
+        n_paths=params.n_paths,
+        mean_pnl=bh_mean_pnl,
+        mean_return=bh_mean_return,
+        mean_drawdown=bh_mean_dd,
+        worst_drawdown=bh_worst_dd,
+        mean_volatility= 0.0,
+        mean_sharpe= 0.0,
+    )
+
+    # MA Crossover storage
+    ma_mean_pnl = float(pnls_ma.mean())
+    ma_mean_return = float(total_returns_ma.mean())
+    ma_mean_dd = float(mdds_ma.mean())
+    ma_worst_dd = float(mdds_ma.max())
+
+    insert_result(
+        strategy="ma_crossover_20_50",
+        n_paths=params.n_paths,
+        mean_pnl=ma_mean_pnl,
+        mean_return=ma_mean_return,
+        mean_drawdown=ma_mean_dd,
+        worst_drawdown=ma_worst_dd,
+        mean_volatility=0.0,
+        mean_sharpe=0.0,
+    )
 
     print_summary("Buy & Hold on GBM", pnls_bh, total_returns_bh, mdds_bh)
     print_summary("MA Crossover (20/50) on GBM", pnls_ma, total_returns_ma, mdds_ma)
