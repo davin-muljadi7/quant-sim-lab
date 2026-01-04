@@ -2,9 +2,6 @@ import sqlite3
 
 
 def init_db(db_path: str = "results.db") -> None:
-    """
-    Create the SQLite database and results table if they don't exist.
-    """
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
@@ -21,6 +18,44 @@ def init_db(db_path: str = "results.db") -> None:
         mean_sharpe REAL
     )
     """)
+
+    conn.commit()
+    conn.close()
+
+
+def insert_result(
+    strategy: str,
+    n_paths: int,
+    mean_pnl: float,
+    mean_return: float,
+    mean_drawdown: float,
+    worst_drawdown: float,
+    mean_volatility: float,
+    mean_sharpe: float,
+    db_path: str = "results.db",
+) -> None:
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        INSERT INTO results (
+            strategy, n_paths, mean_pnl, mean_return, mean_drawdown,
+            worst_drawdown, mean_volatility, mean_sharpe
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            strategy,
+            n_paths,
+            mean_pnl,
+            mean_return,
+            mean_drawdown,
+            worst_drawdown,
+            mean_volatility,
+            mean_sharpe,
+        ),
+    )
 
     conn.commit()
     conn.close()
